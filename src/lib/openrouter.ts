@@ -3,16 +3,23 @@ import { recipeOutputSchema } from "./validators";
 import type { RecipeOutput } from "./validators";
 import type { GenerateRecipeInput } from "@/types/recipe";
 
-const client = new OpenAI({
-  baseURL: "https://openrouter.ai/api/v1",
-  apiKey: process.env.OPENROUTER_API_KEY,
-  defaultHeaders: {
-    "HTTP-Referer": process.env.NEXTAUTH_URL || "http://localhost:3000",
-    "X-Title": "The Gourmet Quest",
-  },
-});
-
 const MODEL = "google/gemini-2.0-flash-001";
+
+let _client: OpenAI | null = null;
+
+function getClient() {
+  if (!_client) {
+    _client = new OpenAI({
+      baseURL: "https://openrouter.ai/api/v1",
+      apiKey: process.env.OPENROUTER_API_KEY!,
+      defaultHeaders: {
+        "HTTP-Referer": process.env.NEXTAUTH_URL || "http://localhost:3000",
+        "X-Title": "The Gourmet Quest",
+      },
+    });
+  }
+  return _client;
+}
 
 function buildPrompt(input: GenerateRecipeInput): string {
   const parts = [
@@ -65,7 +72,7 @@ export async function generateRecipe(
 ): Promise<RecipeOutput> {
   const userMessage = buildPrompt(input);
 
-  const response = await client.chat.completions.create({
+  const response = await getClient().chat.completions.create({
     model: MODEL,
     messages: [
       { role: "system", content: SYSTEM_PROMPT },
