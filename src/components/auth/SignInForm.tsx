@@ -2,51 +2,14 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 
 export default function SignInForm() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [demoLoading, setDemoLoading] = useState(false);
-
-  const handleDemoLogin = async () => {
-    setError("");
-    setDemoLoading(true);
-
-    try {
-      const res = await fetch("/api/auth/demo", { method: "POST" });
-      if (!res.ok) {
-        setError("Failed to set up demo account");
-        setDemoLoading(false);
-        return;
-      }
-
-      const { email: demoEmail, password: demoPassword } = await res.json();
-
-      const result = await signIn("credentials", {
-        email: demoEmail,
-        password: demoPassword,
-        redirect: false,
-      });
-
-      setDemoLoading(false);
-
-      if (result?.error) {
-        setError("Demo login failed. Please try again.");
-      } else {
-        router.push("/generate");
-        router.refresh();
-      }
-    } catch {
-      setError("Something went wrong");
-      setDemoLoading(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,8 +27,7 @@ export default function SignInForm() {
     if (result?.error) {
       setError("Invalid email or password");
     } else {
-      router.push("/generate");
-      router.refresh();
+      window.location.href = "/generate";
     }
   };
 

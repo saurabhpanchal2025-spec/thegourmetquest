@@ -1,7 +1,14 @@
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import RecipeGeneratorForm from "@/components/recipe/RecipeGeneratorForm";
 import Card from "@/components/ui/Card";
 
-export default function GeneratePage() {
+export default async function GeneratePage() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    redirect("/auth/signin");
+  }
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="text-center mb-8">
