@@ -116,15 +116,6 @@ export default function SignInForm() {
         Continue with Google
       </Button>
 
-      <Button
-        type="button"
-        variant="secondary"
-        className="w-full"
-        onClick={handleDemoLogin}
-        disabled={demoLoading || loading}
-      >
-        {demoLoading ? "Setting up demo..." : "Try Demo Account"}
-      </Button>
     </form>
   );
 }

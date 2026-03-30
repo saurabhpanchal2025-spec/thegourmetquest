@@ -55,18 +55,10 @@ export default function Home() {
             and how much time you have. Our AI chef creates a personalized recipe
             just for you.
           </p>
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/generate">
-              <Button size="lg">Generate a Recipe</Button>
-            </Link>
-            <Link href="/auth/signup">
-              <Button variant="outline" size="lg">
-                Create Account
-              </Button>
-            </Link>
+          <div className="mt-10">
             <Link href="/auth/signin">
-              <Button variant="secondary" size="lg">
-                Try Demo
+              <Button size="lg">
+                Start Cooking with AI
               </Button>
             </Link>
           </div>
@@ -108,11 +100,11 @@ export default function Home() {
             Ready to Cook Something Amazing?
           </h2>
           <p className="mt-4 text-muted">
-            Sign up for free and start generating recipes in seconds.
+            Log in and let AI craft your next favorite meal.
           </p>
           <div className="mt-8">
-            <Link href="/auth/signup">
-              <Button size="lg">Get Started Free</Button>
+            <Link href="/auth/signin">
+              <Button size="lg">Log In to Get Started</Button>
             </Link>
           </div>
         </div>
