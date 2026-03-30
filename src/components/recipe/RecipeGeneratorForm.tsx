@@ -40,7 +40,6 @@ export default function RecipeGeneratorForm() {
     setLoading(true);
     setTipIndex(0);
 
-    // Rotate tips every 3 seconds
     const tipInterval = setInterval(() => {
       setTipIndex((prev) => (prev + 1) % LOADING_TIPS.length);
     }, 3000);
@@ -78,77 +77,103 @@ export default function RecipeGeneratorForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-5">
       {error && (
-        <div className="rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-600">
+        <div className="rounded-xl bg-red-50 border border-red-200 p-4 text-sm text-red-600 flex items-center gap-2">
+          <span className="text-lg">&#9888;</span>
           {error}
         </div>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="rounded-xl border-l-4 border-l-orange-400 bg-orange-50/60 p-4">
+          <Select
+            id="recipeType"
+            label="Recipe Type"
+            icon="🍽️"
+            options={RECIPE_TYPES}
+            value={recipeType}
+            onChange={(e) => setRecipeType(e.target.value)}
+            placeholder="Select recipe type"
+            required
+          />
+        </div>
+        <div className="rounded-xl border-l-4 border-l-red-400 bg-red-50/60 p-4">
+          <Select
+            id="cookingMethod"
+            label="Cooking Method"
+            icon="🔥"
+            options={COOKING_METHODS}
+            value={cookingMethod}
+            onChange={(e) => setCookingMethod(e.target.value)}
+            placeholder="Select cooking method"
+            required
+          />
+        </div>
+        <div className="rounded-xl border-l-4 border-l-emerald-400 bg-emerald-50/60 p-4">
+          <Select
+            id="cuisine"
+            label="Cuisine"
+            icon="🌍"
+            options={CUISINES}
+            value={cuisine}
+            onChange={(e) => setCuisine(e.target.value)}
+            placeholder="Select cuisine"
+            required
+          />
+        </div>
+        <div className="rounded-xl border-l-4 border-l-blue-400 bg-blue-50/60 p-4">
+          <Select
+            id="timeCategory"
+            label="Time Available"
+            icon="⏱️"
+            options={TIME_CATEGORIES}
+            value={timeCategory}
+            onChange={(e) => setTimeCategory(e.target.value)}
+            placeholder="Select time range"
+            required
+          />
+        </div>
+      </div>
+
+      <div className="rounded-xl border-l-4 border-l-purple-400 bg-purple-50/60 p-4">
         <Select
-          id="recipeType"
-          label="Recipe Type"
-          options={RECIPE_TYPES}
-          value={recipeType}
-          onChange={(e) => setRecipeType(e.target.value)}
-          placeholder="Select recipe type"
-          required
-        />
-        <Select
-          id="cookingMethod"
-          label="Cooking Method"
-          options={COOKING_METHODS}
-          value={cookingMethod}
-          onChange={(e) => setCookingMethod(e.target.value)}
-          placeholder="Select cooking method"
-          required
-        />
-        <Select
-          id="cuisine"
-          label="Cuisine"
-          options={CUISINES}
-          value={cuisine}
-          onChange={(e) => setCuisine(e.target.value)}
-          placeholder="Select cuisine"
-          required
-        />
-        <Select
-          id="timeCategory"
-          label="Time Available"
-          options={TIME_CATEGORIES}
-          value={timeCategory}
-          onChange={(e) => setTimeCategory(e.target.value)}
-          placeholder="Select time range"
-          required
+          id="dietaryPreference"
+          label="Dietary Preference"
+          icon="🥗"
+          options={DIETARY_PREFERENCES}
+          value={dietaryPreference}
+          onChange={(e) => setDietaryPreference(e.target.value)}
         />
       </div>
 
-      <Select
-        id="dietaryPreference"
-        label="Dietary Preference"
-        options={DIETARY_PREFERENCES}
-        value={dietaryPreference}
-        onChange={(e) => setDietaryPreference(e.target.value)}
-      />
+      <div className="rounded-xl border-l-4 border-l-amber-400 bg-amber-50/60 p-4">
+        <TagInput
+          label="🥕 Ingredients (optional)"
+          tags={ingredients}
+          onTagsChange={setIngredients}
+          placeholder="Add ingredients you have on hand"
+        />
+      </div>
 
-      <TagInput
-        label="Ingredients (optional)"
-        tags={ingredients}
-        onTagsChange={setIngredients}
-        placeholder="Add ingredients you have on hand"
-      />
-
-      <Button type="submit" size="lg" className="w-full" disabled={loading}>
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full py-4 rounded-xl text-white font-bold text-lg bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-orange-600 hover:via-red-600 hover:to-pink-600 shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
+      >
         {loading ? (
-          <span className="flex items-center gap-2">
-            <Spinner size="sm" />
-            {LOADING_TIPS[tipIndex]}
+          <span className="flex items-center justify-center gap-3">
+            <Spinner size="sm" className="border-white/30 border-t-white" />
+            <span className="animate-pulse">{LOADING_TIPS[tipIndex]}</span>
           </span>
         ) : (
-          "Generate Recipe"
+          <span className="flex items-center justify-center gap-2">
+            <span className="text-xl">&#10024;</span>
+            Generate My Recipe
+            <span className="text-xl">&#10024;</span>
+          </span>
         )}
-      </Button>
+      </button>
     </form>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useSession, signOut } from "next-auth/react";
 import Button from "@/components/ui/Button";
 import { useState } from "react";
@@ -14,7 +15,7 @@ export default function Navbar() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl">🍳</span>
+            <Image src="/logo.jpg" alt="The Gourmet Quest" width={36} height={36} className="rounded-full" />
             <span className="text-lg font-bold text-foreground">
               The Gourmet Quest
             </span>

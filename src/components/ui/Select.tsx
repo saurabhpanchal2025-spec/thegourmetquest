@@ -5,17 +5,19 @@ import { SelectHTMLAttributes, forwardRef } from "react";
 
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
+  icon?: string;
   error?: string;
   options: readonly { value: string; label: string }[];
   placeholder?: string;
 }
 
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ className, label, error, options, placeholder, id, ...props }, ref) => {
+  ({ className, label, icon, error, options, placeholder, id, ...props }, ref) => {
     return (
       <div className="w-full">
         {label && (
-          <label htmlFor={id} className="block text-sm font-medium text-foreground mb-1">
+          <label htmlFor={id} className="block text-sm font-semibold text-foreground mb-1.5">
+            {icon && <span className="mr-1.5">{icon}</span>}
             {label}
           </label>
         )}
