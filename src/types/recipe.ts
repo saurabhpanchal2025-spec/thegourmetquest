@@ -36,6 +36,7 @@ export interface RecipeWithMeta extends GeneratedRecipe {
   cuisine: string;
   timeCategory: string;
   dietaryPreference: string;
+  nutritionalVariants: string[];
   inputIngredients: string[];
   createdAt: string;
   isSaved?: boolean;

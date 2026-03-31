@@ -41,6 +41,7 @@ export default async function RecipePage({ params }: Props) {
     cuisine: recipe.cuisine,
     timeCategory: recipe.timeCategory,
     dietaryPreference: recipe.dietaryPreference,
+    nutritionalVariants: recipe.nutritionalVariants,
     inputIngredients: recipe.inputIngredients,
     createdAt: recipe.createdAt.toISOString(),
     isSaved: Array.isArray(recipe.savedBy) && recipe.savedBy.length > 0,

@@ -90,6 +90,26 @@ export default function RecipeDetail({ recipe, showBookmark = true }: RecipeDeta
             <Badge variant="secondary">{recipe.dietaryPreference.replace("_", " ").replace("eggetarian", "Egg-etarian")}</Badge>
           )}
         </div>
+        {recipe.nutritionalVariants && recipe.nutritionalVariants.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {recipe.nutritionalVariants.map((variant) => {
+              const iconMap: Record<string, string> = {
+                protein_rich: "💪",
+                fibre_rich: "🌾",
+                iron_rich: "🩸",
+                calcium_rich: "🦴",
+              };
+              return (
+                <span
+                  key={variant}
+                  className="inline-flex items-center gap-1 rounded-full bg-teal-50 border border-teal-200 px-3 py-1 text-xs font-semibold text-teal-700"
+                >
+                  {iconMap[variant] || "🎯"} {variant.replace("_", " ")}
+                </span>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Time & Servings */}

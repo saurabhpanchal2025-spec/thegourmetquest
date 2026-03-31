@@ -45,6 +45,7 @@ export async function POST(request: Request) {
         cuisine: input.cuisine,
         timeCategory: input.timeCategory,
         dietaryPreference: input.dietaryPreference,
+        nutritionalVariants: input.nutritionalVariants,
         inputIngredients: input.ingredients,
       },
     });

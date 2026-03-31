@@ -34,6 +34,7 @@ export default async function HistoryPage() {
     cuisine: r.cuisine,
     timeCategory: r.timeCategory,
     dietaryPreference: r.dietaryPreference,
+    nutritionalVariants: r.nutritionalVariants,
     inputIngredients: r.inputIngredients,
     createdAt: r.createdAt.toISOString(),
     isSaved: r.savedBy.length > 0,

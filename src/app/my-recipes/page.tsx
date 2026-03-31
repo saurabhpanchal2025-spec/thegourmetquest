@@ -32,6 +32,7 @@ export default async function MyRecipesPage() {
     cuisine: sr.recipe.cuisine,
     timeCategory: sr.recipe.timeCategory,
     dietaryPreference: sr.recipe.dietaryPreference,
+    nutritionalVariants: sr.recipe.nutritionalVariants,
     inputIngredients: sr.recipe.inputIngredients,
     createdAt: sr.recipe.createdAt.toISOString(),
     isSaved: true,

@@ -76,8 +76,9 @@ model Recipe {
   cookingMethod     String
   cuisine           String
   timeCategory      String
-  dietaryPreference String   @default("none")
-  inputIngredients  String[]
+  dietaryPreference    String   @default("none")
+  nutritionalVariants  String[] @default([])
+  inputIngredients     String[]
 
   imageUrl  String?
   createdAt DateTime @default(now())
