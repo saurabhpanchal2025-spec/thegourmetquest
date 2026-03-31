@@ -90,26 +90,6 @@ export default function RecipeDetail({ recipe, showBookmark = true }: RecipeDeta
             <Badge variant="secondary">{recipe.dietaryPreference.replace("_", " ").replace("eggetarian", "Egg-etarian")}</Badge>
           )}
         </div>
-        {recipe.nutritionalVariants && recipe.nutritionalVariants.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-2">
-            {recipe.nutritionalVariants.map((variant) => {
-              const iconMap: Record<string, string> = {
-                protein_rich: "💪",
-                fibre_rich: "🌾",
-                iron_rich: "🩸",
-                calcium_rich: "🦴",
-              };
-              return (
-                <span
-                  key={variant}
-                  className="inline-flex items-center gap-1 rounded-full bg-teal-50 border border-teal-200 px-3 py-1 text-xs font-semibold text-teal-700"
-                >
-                  {iconMap[variant] || "🎯"} {variant.replace("_", " ")}
-                </span>
-              );
-            })}
-          </div>
-        )}
       </div>
 
       {/* Time & Servings */}
@@ -215,21 +195,68 @@ export default function RecipeDetail({ recipe, showBookmark = true }: RecipeDeta
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
             {[
-              { label: "Calories", value: `${recipe.nutrition.calories}` },
-              { label: "Protein", value: recipe.nutrition.protein },
-              { label: "Carbs", value: recipe.nutrition.carbs },
-              { label: "Fat", value: recipe.nutrition.fat },
-              { label: "Fiber", value: recipe.nutrition.fiber },
+              { label: "Calories", value: `${recipe.nutrition.calories}`, icon: "🔥" },
+              { label: "Protein", value: recipe.nutrition.protein, icon: "💪" },
+              { label: "Carbs", value: recipe.nutrition.carbs, icon: "🌾" },
+              { label: "Fat", value: recipe.nutrition.fat, icon: "🫒" },
+              { label: "Fiber", value: recipe.nutrition.fiber, icon: "🥬" },
             ].map((item) => (
               <div
                 key={item.label}
                 className="rounded-lg border border-border p-3 text-center"
               >
+                <p className="text-lg mb-1">{item.icon}</p>
                 <p className="text-xs text-muted">{item.label}</p>
                 <p className="text-sm font-semibold text-foreground">{item.value}</p>
               </div>
             ))}
           </div>
+
+          {/* Nutritional Focus */}
+          {recipe.nutritionalVariants && recipe.nutritionalVariants.length > 0 && (
+            <div className="mt-5 rounded-xl bg-teal-50 border border-teal-200 p-4">
+              <h3 className="text-sm font-semibold text-teal-800 mb-3">
+                🎯 Nutritional Focus of This Recipe
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {recipe.nutritionalVariants.map((variant) => {
+                  const infoMap: Record<string, { icon: string; label: string; description: string }> = {
+                    protein_rich: {
+                      icon: "💪",
+                      label: "Protein Rich",
+                      description: "High in protein to support muscle growth and repair. Key sources in this recipe include legumes, dairy, and whole grains.",
+                    },
+                    fibre_rich: {
+                      icon: "🌾",
+                      label: "Fibre Rich",
+                      description: "Packed with dietary fibre for healthy digestion. Ingredients like vegetables, whole grains, and legumes boost fibre content.",
+                    },
+                    iron_rich: {
+                      icon: "🩸",
+                      label: "Iron Rich",
+                      description: "Rich in iron to support healthy blood and energy levels. Includes leafy greens, lentils, and iron-fortified ingredients.",
+                    },
+                    calcium_rich: {
+                      icon: "🦴",
+                      label: "Calcium Rich",
+                      description: "Good source of calcium for strong bones and teeth. Features dairy, sesame, leafy greens, or fortified ingredients.",
+                    },
+                  };
+                  const info = infoMap[variant];
+                  if (!info) return null;
+                  return (
+                    <div key={variant} className="flex gap-3 rounded-lg bg-white p-3 border border-teal-100">
+                      <span className="text-2xl flex-shrink-0">{info.icon}</span>
+                      <div>
+                        <p className="text-sm font-semibold text-teal-800">{info.label}</p>
+                        <p className="text-xs text-teal-600 leading-relaxed mt-0.5">{info.description}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
