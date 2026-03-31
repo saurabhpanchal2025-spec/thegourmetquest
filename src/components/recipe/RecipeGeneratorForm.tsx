@@ -12,6 +12,7 @@ import {
   CUISINES,
   TIME_CATEGORIES,
   DIETARY_PREFERENCES,
+  NUTRITIONAL_VARIANTS,
 } from "@/lib/constants";
 
 const LOADING_TIPS = [
@@ -29,10 +30,17 @@ export default function RecipeGeneratorForm() {
   const [cuisine, setCuisine] = useState("");
   const [timeCategory, setTimeCategory] = useState("");
   const [dietaryPreference, setDietaryPreference] = useState("none");
+  const [nutritionalVariants, setNutritionalVariants] = useState<string[]>([]);
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [tipIndex, setTipIndex] = useState(0);
+
+  const toggleNutritionalVariant = (value: string) => {
+    setNutritionalVariants((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+    );
+  };
 
   const generateRecipe = async (payload: {
     recipeType: string;
@@ -40,6 +48,7 @@ export default function RecipeGeneratorForm() {
     cuisine: string;
     timeCategory: string;
     dietaryPreference: string;
+    nutritionalVariants?: string[];
     ingredients: string[];
   }) => {
     setError("");
@@ -83,6 +92,7 @@ export default function RecipeGeneratorForm() {
       cuisine,
       timeCategory,
       dietaryPreference,
+      nutritionalVariants,
       ingredients,
     });
   };
@@ -202,6 +212,36 @@ export default function RecipeGeneratorForm() {
           value={dietaryPreference}
           onChange={(e) => setDietaryPreference(e.target.value)}
         />
+      </div>
+
+      <div className="rounded-xl border-l-4 border-l-teal-400 bg-teal-50/60 p-4">
+        <p className="text-sm font-semibold text-foreground mb-3">
+          🎯 Nutritional Focus <span className="text-xs font-normal text-muted">(select any)</span>
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          {NUTRITIONAL_VARIANTS.map((variant) => {
+            const isSelected = nutritionalVariants.includes(variant.value);
+            return (
+              <label
+                key={variant.value}
+                className={`flex items-center gap-2 px-3 py-2.5 rounded-lg cursor-pointer transition-all text-sm font-medium ${
+                  isSelected
+                    ? "bg-teal-500 text-white shadow-sm"
+                    : "bg-white border border-border text-foreground hover:bg-teal-50"
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={isSelected}
+                  onChange={() => toggleNutritionalVariant(variant.value)}
+                  className="sr-only"
+                />
+                <span>{variant.icon}</span>
+                <span>{variant.label}</span>
+              </label>
+            );
+          })}
+        </div>
       </div>
 
       <div className="rounded-xl border-l-4 border-l-amber-400 bg-amber-50/60 p-4">

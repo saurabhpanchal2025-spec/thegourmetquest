@@ -56,6 +56,14 @@ export const DIETARY_PREFERENCES = [
   { value: "eggetarian", label: "Egg-etarian" },
 ] as const;
 
+export const NUTRITIONAL_VARIANTS = [
+  { value: "protein_rich", label: "Protein Rich", icon: "💪" },
+  { value: "fibre_rich", label: "Fibre Rich", icon: "🌾" },
+  { value: "iron_rich", label: "Iron Rich", icon: "🩸" },
+  { value: "calcium_rich", label: "Calcium Rich", icon: "🦴" },
+] as const;
+
+export type NutritionalVariant = (typeof NUTRITIONAL_VARIANTS)[number]["value"];
 export type RecipeType = (typeof RECIPE_TYPES)[number]["value"];
 export type CookingMethod = (typeof COOKING_METHODS)[number]["value"];
 export type Cuisine = (typeof CUISINES)[number]["value"];

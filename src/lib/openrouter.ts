@@ -31,7 +31,7 @@ function buildPrompt(input: GenerateRecipeInput): string {
 
   if (input.dietaryPreference && input.dietaryPreference !== "none") {
     const dietMap: Record<string, string> = {
-      vegetarian: "The recipe MUST be vegetarian (no meat, no fish, no poultry). Eggs and dairy are allowed.",
+      vegetarian: "The recipe MUST be vegetarian (no meat, no fish, no poultry, and NO eggs). Dairy is allowed but eggs are NOT allowed.",
       vegan: "The recipe MUST be vegan (no animal products at all — no meat, fish, dairy, eggs, or honey).",
       gluten_free: "The recipe MUST be gluten-free (no wheat, barley, rye, or gluten-containing ingredients).",
       vegan_gluten_free: "The recipe MUST be both vegan AND gluten-free (no animal products and no gluten-containing ingredients).",
@@ -42,6 +42,13 @@ function buildPrompt(input: GenerateRecipeInput): string {
 
   if (input.excludeIngredients && input.excludeIngredients.length > 0) {
     parts.push(`Do NOT use these ingredients (the user doesn't have them): ${input.excludeIngredients.join(", ")}. Find suitable substitutes or use completely different ingredients instead`);
+  }
+
+  if (input.nutritionalVariants && input.nutritionalVariants.length > 0) {
+    const variantLabels = input.nutritionalVariants.map((v) =>
+      v.replace("_", " ")
+    );
+    parts.push(`The recipe should be nutritionally focused on being: ${variantLabels.join(", ")}. Prioritize ingredients that are naturally high in these nutrients`);
   }
 
   if (input.ingredients.length > 0) {
@@ -65,6 +72,7 @@ const SYSTEM_PROMPT = `You are a world-class chef and recipe creator. Generate a
 }
 
 Important rules:
+- ALWAYS use metric units (grams, ml, litres) for ingredient amounts. Never use ounces, pounds, cups, or imperial units. For small amounts use teaspoons (tsp) and tablespoons (tbsp)
 - Ensure prep + cook time respects the user's time constraint
 - Ingredients should be specific with realistic amounts
 - Instructions should be clear, numbered steps
