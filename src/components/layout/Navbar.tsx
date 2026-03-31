@@ -38,6 +38,12 @@ export default function Navbar() {
                   My Recipes
                 </Link>
                 <Link
+                  href="/weekly-menu"
+                  className="text-sm font-medium text-muted hover:text-foreground transition-colors"
+                >
+                  Weekly Menu
+                </Link>
+                <Link
                   href="/history"
                   className="text-sm font-medium text-muted hover:text-foreground transition-colors"
                 >
@@ -93,6 +99,9 @@ export default function Navbar() {
                 </Link>
                 <Link href="/my-recipes" className="block text-sm font-medium text-muted hover:text-foreground" onClick={() => setMenuOpen(false)}>
                   My Recipes
+                </Link>
+                <Link href="/weekly-menu" className="block text-sm font-medium text-muted hover:text-foreground" onClick={() => setMenuOpen(false)}>
+                  Weekly Menu
                 </Link>
                 <Link href="/history" className="block text-sm font-medium text-muted hover:text-foreground" onClick={() => setMenuOpen(false)}>
                   History

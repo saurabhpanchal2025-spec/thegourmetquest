@@ -40,5 +40,43 @@ export const recipeOutputSchema = z.object({
   }),
 });
 
+// Weekly Menu schemas
+export const weeklyMenuInputSchema = z.object({
+  cuisine: z.string().min(1, "Cuisine is required"),
+  dietaryPreference: z.string().default("none"),
+  nutritionalVariants: z.array(z.string()).default([]),
+  timeCategory: z.string().min(1, "Time preference is required"),
+  includeAppetizers: z.boolean().default(false),
+  includeDesserts: z.boolean().default(false),
+});
+
+const mealItemSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  prepTime: z.number(),
+  cookTime: z.number(),
+});
+
+const mealWithCoursesSchema = z.object({
+  appetizer: mealItemSchema.nullable(),
+  main: mealItemSchema,
+  dessert: mealItemSchema.nullable(),
+});
+
+const dayMenuSchema = z.object({
+  day: z.string(),
+  breakfast: mealItemSchema,
+  lunch: mealWithCoursesSchema,
+  dinner: mealWithCoursesSchema,
+});
+
+export const weeklyMenuOutputSchema = z.object({
+  weeklyMenu: z.array(dayMenuSchema).length(7),
+});
+
 export type GenerateRecipeInput = z.infer<typeof generateRecipeSchema>;
 export type RecipeOutput = z.infer<typeof recipeOutputSchema>;
+export type WeeklyMenuInput = z.infer<typeof weeklyMenuInputSchema>;
+export type WeeklyMenuOutput = z.infer<typeof weeklyMenuOutputSchema>;
+export type DayMenu = z.infer<typeof dayMenuSchema>;
+export type MealItem = z.infer<typeof mealItemSchema>;

@@ -1,6 +1,6 @@
 import OpenAI from "openai";
-import { recipeOutputSchema } from "./validators";
-import type { RecipeOutput } from "./validators";
+import { recipeOutputSchema, weeklyMenuOutputSchema } from "./validators";
+import type { RecipeOutput, WeeklyMenuInput, WeeklyMenuOutput } from "./validators";
 import type { GenerateRecipeInput } from "@/types/recipe";
 
 const MODEL = "google/gemini-2.0-flash-001";
@@ -104,5 +104,100 @@ export async function generateRecipe(
 
   const parsed = JSON.parse(jsonStr);
   const validated = recipeOutputSchema.parse(parsed);
+  return validated;
+}
+
+// Weekly Menu Generation
+const WEEKLY_MENU_SYSTEM_PROMPT = `You are a world-class meal planner and chef. Generate a complete 7-day weekly meal plan based on the user's preferences. Return ONLY valid JSON (no markdown, no code fences):
+{
+  "weeklyMenu": [
+    {
+      "day": "Monday",
+      "breakfast": { "title": "string", "description": "string (1 sentence)", "prepTime": number, "cookTime": number },
+      "lunch": {
+        "appetizer": { "title": "string", "description": "string", "prepTime": number, "cookTime": number } or null,
+        "main": { "title": "string", "description": "string (1 sentence)", "prepTime": number, "cookTime": number },
+        "dessert": { "title": "string", "description": "string", "prepTime": number, "cookTime": number } or null
+      },
+      "dinner": {
+        "appetizer": { ... } or null,
+        "main": { "title": "string", "description": "string (1 sentence)", "prepTime": number, "cookTime": number },
+        "dessert": { ... } or null
+      }
+    }
+    ... (all 7 days: Monday through Sunday)
+  ]
+}
+
+Rules:
+- Generate all 7 days (Monday to Sunday)
+- Every day MUST have breakfast, lunch.main, and dinner.main
+- Set appetizer and dessert to null unless the user requested them
+- Ensure variety across the week — avoid repeating the same dish
+- Keep descriptions short (1 sentence max)
+- prepTime and cookTime in minutes
+- ALWAYS use metric units in descriptions
+- Return ONLY the JSON object`;
+
+function buildWeeklyMenuPrompt(input: WeeklyMenuInput): string {
+  const parts = [
+    `Generate a 7-day weekly meal plan`,
+    `Cuisine: ${input.cuisine.replace("_", " ")}`,
+    `General time per meal: ${input.timeCategory.replace("_", "-").replace("under-", "under ")} minutes`,
+  ];
+
+  if (input.dietaryPreference && input.dietaryPreference !== "none") {
+    const dietMap: Record<string, string> = {
+      vegetarian: "ALL meals MUST be vegetarian (no meat, fish, poultry, or eggs). Dairy allowed.",
+      vegan: "ALL meals MUST be vegan (no animal products).",
+      gluten_free: "ALL meals MUST be gluten-free.",
+      vegan_gluten_free: "ALL meals MUST be vegan AND gluten-free.",
+      eggetarian: "ALL meals MUST be egg-etarian (no meat/fish, eggs and dairy allowed).",
+    };
+    parts.push(dietMap[input.dietaryPreference] || "");
+  }
+
+  if (input.nutritionalVariants.length > 0) {
+    parts.push(`Nutritional focus: ${input.nutritionalVariants.map((v) => v.replace("_", " ")).join(", ")}`);
+  }
+
+  if (input.includeAppetizers) {
+    parts.push("Include appetizers for lunch and dinner");
+  } else {
+    parts.push("Set appetizer to null for all meals");
+  }
+
+  if (input.includeDesserts) {
+    parts.push("Include desserts for lunch and dinner");
+  } else {
+    parts.push("Set dessert to null for all meals");
+  }
+
+  return parts.join(". ") + ".";
+}
+
+export async function generateWeeklyMenu(
+  input: WeeklyMenuInput
+): Promise<WeeklyMenuOutput> {
+  const userMessage = buildWeeklyMenuPrompt(input);
+
+  const response = await getClient().chat.completions.create({
+    model: MODEL,
+    messages: [
+      { role: "system", content: WEEKLY_MENU_SYSTEM_PROMPT },
+      { role: "user", content: userMessage },
+    ],
+    temperature: 0.8,
+    max_tokens: 8000,
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) {
+    throw new Error("No response from AI model");
+  }
+
+  const jsonStr = content.replace(/```json?\n?/g, "").replace(/```\n?/g, "").trim();
+  const parsed = JSON.parse(jsonStr);
+  const validated = weeklyMenuOutputSchema.parse(parsed);
   return validated;
 }
