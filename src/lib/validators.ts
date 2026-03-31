@@ -7,6 +7,7 @@ export const generateRecipeSchema = z.object({
   timeCategory: z.string().min(1, "Time category is required"),
   dietaryPreference: z.string().default("none"),
   ingredients: z.array(z.string()).default([]),
+  excludeIngredients: z.array(z.string()).default([]),
 });
 
 export const recipeOutputSchema = z.object({

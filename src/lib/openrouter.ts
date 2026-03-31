@@ -40,6 +40,10 @@ function buildPrompt(input: GenerateRecipeInput): string {
     parts.push(dietMap[input.dietaryPreference] || "");
   }
 
+  if (input.excludeIngredients && input.excludeIngredients.length > 0) {
+    parts.push(`Do NOT use these ingredients (the user doesn't have them): ${input.excludeIngredients.join(", ")}. Find suitable substitutes or use completely different ingredients instead`);
+  }
+
   if (input.ingredients.length > 0) {
     parts.push(`Must include these ingredients: ${input.ingredients.join(", ")}`);
   }

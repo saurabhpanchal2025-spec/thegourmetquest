@@ -48,4 +48,5 @@ export interface GenerateRecipeInput {
   timeCategory: string;
   dietaryPreference: string;
   ingredients: string[];
+  excludeIngredients?: string[];
 }

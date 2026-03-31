@@ -1,6 +1,9 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Badge from "@/components/ui/Badge";
+import Spinner from "@/components/ui/Spinner";
 import BookmarkButton from "@/components/recipe/BookmarkButton";
 import type { RecipeWithMeta } from "@/types/recipe";
 
@@ -10,6 +13,65 @@ interface RecipeDetailProps {
 }
 
 export default function RecipeDetail({ recipe, showBookmark = true }: RecipeDetailProps) {
+  const router = useRouter();
+  const [missingIngredients, setMissingIngredients] = useState<Set<number>>(new Set());
+  const [regenerating, setRegenerating] = useState(false);
+  const [error, setError] = useState("");
+
+  const toggleMissing = (index: number) => {
+    setMissingIngredients((prev) => {
+      const next = new Set(prev);
+      if (next.has(index)) {
+        next.delete(index);
+      } else {
+        next.add(index);
+      }
+      return next;
+    });
+  };
+
+  const handleRegenerate = async () => {
+    setError("");
+    setRegenerating(true);
+
+    const excludeNames = recipe.ingredients
+      .filter((_, i) => missingIngredients.has(i))
+      .map((ing) => ing.name);
+
+    const availableNames = recipe.ingredients
+      .filter((_, i) => !missingIngredients.has(i))
+      .map((ing) => ing.name);
+
+    try {
+      const res = await fetch("/api/recipes/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          recipeType: recipe.recipeType,
+          cookingMethod: recipe.cookingMethod,
+          cuisine: recipe.cuisine,
+          timeCategory: recipe.timeCategory,
+          dietaryPreference: recipe.dietaryPreference || "none",
+          ingredients: availableNames,
+          excludeIngredients: excludeNames,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || "Failed to regenerate recipe");
+        setRegenerating(false);
+        return;
+      }
+
+      const data = await res.json();
+      window.location.href = `/recipe/${data.id}`;
+    } catch {
+      setError("Something went wrong. Please try again.");
+      setRegenerating(false);
+    }
+  };
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -48,18 +110,66 @@ export default function RecipeDetail({ recipe, showBookmark = true }: RecipeDeta
 
       {/* Ingredients */}
       <div>
-        <h2 className="text-xl font-semibold text-foreground mb-4">Ingredients</h2>
+        <h2 className="text-xl font-semibold text-foreground mb-2">Ingredients</h2>
+        <p className="text-xs text-muted mb-4">Mark ingredients you don&apos;t have, then regenerate a new recipe without them.</p>
         <ul className="space-y-2">
-          {recipe.ingredients.map((ing, i) => (
-            <li key={i} className="flex items-center gap-3 text-sm">
-              <input type="checkbox" className="h-4 w-4 rounded border-border text-primary focus:ring-primary" />
-              <span>
-                <span className="font-medium">{ing.amount} {ing.unit}</span>{" "}
-                {ing.name}
-              </span>
-            </li>
-          ))}
+          {recipe.ingredients.map((ing, i) => {
+            const isMissing = missingIngredients.has(i);
+            return (
+              <li
+                key={i}
+                onClick={() => toggleMissing(i)}
+                className={`flex items-center gap-3 text-sm px-3 py-2 rounded-lg cursor-pointer transition-all ${
+                  isMissing
+                    ? "bg-red-50 border border-red-200"
+                    : "bg-white border border-border hover:bg-gray-50"
+                }`}
+              >
+                <span className={`flex-shrink-0 h-5 w-5 rounded flex items-center justify-center text-xs border ${
+                  isMissing
+                    ? "bg-red-500 border-red-500 text-white"
+                    : "border-border text-transparent"
+                }`}>
+                  {isMissing ? "x" : ""}
+                </span>
+                <span className={isMissing ? "line-through text-muted" : ""}>
+                  <span className="font-medium">{ing.amount} {ing.unit}</span>{" "}
+                  {ing.name}
+                </span>
+                {isMissing && (
+                  <span className="ml-auto text-xs text-red-500 font-medium">Missing</span>
+                )}
+              </li>
+            );
+          })}
         </ul>
+
+        {/* Regenerate button */}
+        {missingIngredients.size > 0 && (
+          <div className="mt-4">
+            {error && (
+              <div className="rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-600 mb-3">
+                {error}
+              </div>
+            )}
+            <button
+              onClick={handleRegenerate}
+              disabled={regenerating}
+              className="w-full py-3 rounded-xl text-white font-semibold bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-md hover:shadow-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {regenerating ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Spinner size="sm" className="border-white/30 border-t-white" />
+                  Cooking up a new recipe...
+                </span>
+              ) : (
+                <span>
+                  Regenerate without {missingIngredients.size} ingredient{missingIngredients.size > 1 ? "s" : ""}
+                </span>
+              )}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Instructions */}
