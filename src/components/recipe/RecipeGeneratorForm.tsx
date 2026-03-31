@@ -34,8 +34,14 @@ export default function RecipeGeneratorForm() {
   const [error, setError] = useState("");
   const [tipIndex, setTipIndex] = useState(0);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const generateRecipe = async (payload: {
+    recipeType: string;
+    cookingMethod: string;
+    cuisine: string;
+    timeCategory: string;
+    dietaryPreference: string;
+    ingredients: string[];
+  }) => {
     setError("");
     setLoading(true);
     setTipIndex(0);
@@ -48,14 +54,7 @@ export default function RecipeGeneratorForm() {
       const res = await fetch("/api/recipes/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          recipeType,
-          cookingMethod,
-          cuisine,
-          timeCategory,
-          dietaryPreference,
-          ingredients,
-        }),
+        body: JSON.stringify(payload),
       });
 
       clearInterval(tipInterval);
@@ -76,7 +75,65 @@ export default function RecipeGeneratorForm() {
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await generateRecipe({
+      recipeType,
+      cookingMethod,
+      cuisine,
+      timeCategory,
+      dietaryPreference,
+      ingredients,
+    });
+  };
+
+  const handleSurpriseMe = async () => {
+    const pick = <T,>(arr: readonly { value: string; label: string }[]): string =>
+      arr[Math.floor(Math.random() * arr.length)].value;
+
+    const randomType = pick(RECIPE_TYPES);
+    const randomMethod = pick(COOKING_METHODS);
+    const randomCuisine = pick(CUISINES);
+    const randomTime = pick(TIME_CATEGORIES);
+
+    setRecipeType(randomType);
+    setCookingMethod(randomMethod);
+    setCuisine(randomCuisine);
+    setTimeCategory(randomTime);
+    setDietaryPreference("none");
+    setIngredients([]);
+
+    await generateRecipe({
+      recipeType: randomType,
+      cookingMethod: randomMethod,
+      cuisine: randomCuisine,
+      timeCategory: randomTime,
+      dietaryPreference: "none",
+      ingredients: [],
+    });
+  };
+
   return (
+    <div className="space-y-5">
+      {/* Surprise Me */}
+      <button
+        type="button"
+        onClick={handleSurpriseMe}
+        disabled={loading}
+        className="w-full py-3 rounded-xl font-semibold text-base border-2 border-dashed border-purple-300 bg-purple-50 text-purple-700 hover:bg-purple-100 hover:border-purple-400 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+      >
+        🎲 Surprise Me — Pick a random recipe!
+      </button>
+
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-border" />
+        </div>
+        <div className="relative flex justify-center text-xs">
+          <span className="bg-white px-3 text-muted font-medium">or customize below</span>
+        </div>
+      </div>
+
     <form onSubmit={handleSubmit} className="space-y-5">
       {error && (
         <div className="rounded-xl bg-red-50 border border-red-200 p-4 text-sm text-red-600 flex items-center gap-2">
@@ -175,5 +232,6 @@ export default function RecipeGeneratorForm() {
         )}
       </button>
     </form>
+    </div>
   );
 }
