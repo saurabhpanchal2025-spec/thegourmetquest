@@ -25,7 +25,24 @@ export const COOKING_METHODS = [
 ] as const;
 
 export const CUISINES = [
-  { value: "indian", label: "Indian" },
+  // Indian Regional
+  { value: "indian", label: "Indian (General)" },
+  { value: "gujarati", label: "Indian - Gujarati" },
+  { value: "punjabi", label: "Indian - Punjabi" },
+  { value: "south_indian", label: "Indian - South Indian" },
+  { value: "rajasthani", label: "Indian - Rajasthani" },
+  { value: "bengali", label: "Indian - Bengali" },
+  { value: "maharashtrian", label: "Indian - Maharashtrian" },
+  { value: "kerala", label: "Indian - Kerala" },
+  { value: "hyderabadi", label: "Indian - Hyderabadi" },
+  { value: "goan", label: "Indian - Goan" },
+  { value: "kashmiri", label: "Indian - Kashmiri" },
+  { value: "chettinad", label: "Indian - Chettinad" },
+  { value: "awadhi", label: "Indian - Awadhi (Lucknowi)" },
+  { value: "assamese", label: "Indian - Assamese" },
+  { value: "odia", label: "Indian - Odia" },
+  { value: "sindhi", label: "Indian - Sindhi" },
+  // International
   { value: "italian", label: "Italian" },
   { value: "mexican", label: "Mexican" },
   { value: "chinese", label: "Chinese" },
