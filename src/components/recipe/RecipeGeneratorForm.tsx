@@ -10,6 +10,7 @@ import {
   RECIPE_TYPES,
   COOKING_METHODS,
   CUISINES,
+  INDIAN_SUB_CUISINES,
   TIME_CATEGORIES,
   DIETARY_PREFERENCES,
   NUTRITIONAL_VARIANTS,
@@ -28,6 +29,7 @@ export default function RecipeGeneratorForm() {
   const [recipeType, setRecipeType] = useState("");
   const [cookingMethod, setCookingMethod] = useState("");
   const [cuisine, setCuisine] = useState("");
+  const [indianSubCuisine, setIndianSubCuisine] = useState("");
   const [timeCategory, setTimeCategory] = useState("");
   const [dietaryPreference, setDietaryPreference] = useState("none");
   const [nutritionalVariants, setNutritionalVariants] = useState<string[]>([]);
@@ -86,10 +88,13 @@ export default function RecipeGeneratorForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const effectiveCuisine = cuisine === "indian" && indianSubCuisine
+      ? indianSubCuisine
+      : cuisine;
     await generateRecipe({
       recipeType,
       cookingMethod,
-      cuisine,
+      cuisine: effectiveCuisine,
       timeCategory,
       dietaryPreference,
       nutritionalVariants,
@@ -184,10 +189,26 @@ export default function RecipeGeneratorForm() {
             icon="🌍"
             options={CUISINES}
             value={cuisine}
-            onChange={(e) => setCuisine(e.target.value)}
+            onChange={(e) => {
+              setCuisine(e.target.value);
+              if (e.target.value !== "indian") setIndianSubCuisine("");
+            }}
             placeholder="Select cuisine"
             required
           />
+          {cuisine === "indian" && (
+            <div className="mt-3">
+              <Select
+                id="indianSubCuisine"
+                label="Regional Style"
+                icon="🇮🇳"
+                options={INDIAN_SUB_CUISINES}
+                value={indianSubCuisine}
+                onChange={(e) => setIndianSubCuisine(e.target.value)}
+                placeholder="Select regional cuisine"
+              />
+            </div>
+          )}
         </div>
         <div className="rounded-xl border-l-4 border-l-blue-400 bg-blue-50/60 p-4">
           <Select

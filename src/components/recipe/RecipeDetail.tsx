@@ -78,7 +78,26 @@ export default function RecipeDetail({ recipe, showBookmark = true }: RecipeDeta
       <div>
         <div className="flex items-start justify-between gap-4">
           <h1 className="text-3xl font-bold text-foreground">{recipe.title}</h1>
-          {showBookmark && <BookmarkButton recipeId={recipe.id} initialSaved={recipe.isSaved} />}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={() => {
+                if (navigator.share) {
+                  navigator.share({
+                    title: recipe.title,
+                    text: recipe.description,
+                    url: window.location.href,
+                  });
+                } else {
+                  navigator.clipboard.writeText(window.location.href);
+                  alert("Link copied to clipboard!");
+                }
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium border border-border text-muted hover:text-foreground hover:bg-gray-50 transition-all"
+            >
+              📤 Share
+            </button>
+            {showBookmark && <BookmarkButton recipeId={recipe.id} initialSaved={recipe.isSaved} />}
+          </div>
         </div>
         <p className="mt-3 text-muted leading-7">{recipe.description}</p>
         <div className="mt-4 flex flex-wrap gap-2">

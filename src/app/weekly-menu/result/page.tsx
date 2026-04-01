@@ -10,7 +10,8 @@ export default function WeeklyMenuResultPage() {
   const router = useRouter();
   const [menu, setMenu] = useState<WeeklyMenuOutput | null>(null);
   const [prefs, setPrefs] = useState<{
-    cuisine: string;
+    cuisine?: string;
+    cuisines?: string[];
     dietaryPreference: string;
     includeAppetizers: boolean;
     includeDesserts: boolean;
@@ -46,12 +47,12 @@ export default function WeeklyMenuResultPage() {
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
             📅 Your Weekly Menu
           </h1>
-          <p className="mt-2 text-muted text-sm sm:text-base">
-            {prefs?.cuisine && (
-              <span className="capitalize">{prefs.cuisine.replace("_", " ")} cuisine</span>
-            )}
+          <p className="mt-2 text-muted text-sm sm:text-base capitalize">
+            {prefs?.cuisines
+              ? prefs.cuisines.map((c) => c.replace(/_/g, " ")).join(", ")
+              : prefs?.cuisine?.replace(/_/g, " ")}
             {prefs?.dietaryPreference && prefs.dietaryPreference !== "none" && (
-              <span> &middot; {prefs.dietaryPreference.replace("_", " ")}</span>
+              <span> &middot; {prefs.dietaryPreference.replace(/_/g, " ")}</span>
             )}
           </p>
           <p className="mt-1 text-xs text-muted">
@@ -73,6 +74,25 @@ export default function WeeklyMenuResultPage() {
               Generate New Menu
             </button>
           </Link>
+          <button
+            onClick={() => {
+              // Build shareable text summary
+              const lines = menu.weeklyMenu.map(
+                (day) =>
+                  `${day.day}: ${day.breakfast.title} | ${day.lunch.main.title} | ${day.dinner.main.title}`
+              );
+              const text = `My Weekly Menu Plan:\n${lines.join("\n")}`;
+              if (navigator.share) {
+                navigator.share({ title: "My Weekly Menu", text });
+              } else {
+                navigator.clipboard.writeText(text);
+                alert("Menu copied to clipboard!");
+              }
+            }}
+            className="px-6 py-3 rounded-xl font-semibold text-sm border border-border text-foreground hover:bg-gray-50 transition-all"
+          >
+            📤 Share Menu
+          </button>
           <Link href="/generate">
             <button className="px-6 py-3 rounded-xl font-semibold text-sm border border-border text-foreground hover:bg-gray-50 transition-all">
               Generate Single Recipe

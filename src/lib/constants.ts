@@ -25,24 +25,7 @@ export const COOKING_METHODS = [
 ] as const;
 
 export const CUISINES = [
-  // Indian Regional
-  { value: "indian", label: "Indian (General)" },
-  { value: "gujarati", label: "Indian - Gujarati" },
-  { value: "punjabi", label: "Indian - Punjabi" },
-  { value: "south_indian", label: "Indian - South Indian" },
-  { value: "rajasthani", label: "Indian - Rajasthani" },
-  { value: "bengali", label: "Indian - Bengali" },
-  { value: "maharashtrian", label: "Indian - Maharashtrian" },
-  { value: "kerala", label: "Indian - Kerala" },
-  { value: "hyderabadi", label: "Indian - Hyderabadi" },
-  { value: "goan", label: "Indian - Goan" },
-  { value: "kashmiri", label: "Indian - Kashmiri" },
-  { value: "chettinad", label: "Indian - Chettinad" },
-  { value: "awadhi", label: "Indian - Awadhi (Lucknowi)" },
-  { value: "assamese", label: "Indian - Assamese" },
-  { value: "odia", label: "Indian - Odia" },
-  { value: "sindhi", label: "Indian - Sindhi" },
-  // International
+  { value: "indian", label: "Indian" },
   { value: "italian", label: "Italian" },
   { value: "mexican", label: "Mexican" },
   { value: "chinese", label: "Chinese" },
@@ -54,6 +37,25 @@ export const CUISINES = [
   { value: "korean", label: "Korean" },
   { value: "middle_eastern", label: "Middle Eastern" },
   { value: "greek", label: "Greek" },
+] as const;
+
+export const INDIAN_SUB_CUISINES = [
+  { value: "indian_general", label: "General Indian" },
+  { value: "gujarati", label: "Gujarati" },
+  { value: "punjabi", label: "Punjabi" },
+  { value: "south_indian", label: "South Indian" },
+  { value: "rajasthani", label: "Rajasthani" },
+  { value: "bengali", label: "Bengali" },
+  { value: "maharashtrian", label: "Maharashtrian" },
+  { value: "kerala", label: "Kerala" },
+  { value: "hyderabadi", label: "Hyderabadi" },
+  { value: "goan", label: "Goan" },
+  { value: "kashmiri", label: "Kashmiri" },
+  { value: "chettinad", label: "Chettinad" },
+  { value: "awadhi", label: "Awadhi (Lucknowi)" },
+  { value: "assamese", label: "Assamese" },
+  { value: "odia", label: "Odia" },
+  { value: "sindhi", label: "Sindhi" },
 ] as const;
 
 export const TIME_CATEGORIES = [
