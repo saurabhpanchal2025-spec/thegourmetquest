@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Spinner from "@/components/ui/Spinner";
 import type { DayMenu, MealItem } from "@/lib/validators";
 
 interface WeeklyMenuChartProps {
@@ -25,41 +26,63 @@ function MealCard({
   emoji,
   checked,
   onToggle,
+  onViewRecipe,
+  generatingRecipe,
 }: {
   meal: MealItem;
   label: string;
   emoji: string;
   checked: boolean;
   onToggle: () => void;
+  onViewRecipe: () => void;
+  generatingRecipe: boolean;
 }) {
   return (
     <div
-      onClick={onToggle}
-      className={`flex items-start gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all text-sm ${
+      className={`px-3 py-2.5 rounded-lg transition-all text-sm ${
         checked
           ? "bg-green-50 border border-green-200"
           : "bg-white border border-border hover:bg-gray-50"
       }`}
     >
-      <span
-        className={`flex-shrink-0 mt-0.5 h-4 w-4 rounded flex items-center justify-center text-[10px] border ${
-          checked
-            ? "bg-green-500 border-green-500 text-white"
-            : "border-gray-300"
-        }`}
-      >
-        {checked ? "✓" : ""}
-      </span>
-      <div className="flex-1 min-w-0">
-        <p className="text-xs text-muted">{emoji} {label}</p>
-        <p className={`font-medium text-sm ${checked ? "line-through text-muted" : "text-foreground"}`}>
-          {meal.title}
-        </p>
-        <p className="text-xs text-muted mt-0.5 truncate">{meal.description}</p>
-        <p className="text-[10px] text-muted mt-0.5">
-          {meal.prepTime + meal.cookTime} min total
-        </p>
+      <div className="flex items-start gap-3 cursor-pointer" onClick={onToggle}>
+        <span
+          className={`flex-shrink-0 mt-0.5 h-4 w-4 rounded flex items-center justify-center text-[10px] border ${
+            checked
+              ? "bg-green-500 border-green-500 text-white"
+              : "border-gray-300"
+          }`}
+        >
+          {checked ? "\u2713" : ""}
+        </span>
+        <div className="flex-1 min-w-0">
+          <p className="text-xs text-muted">{emoji} {label}</p>
+          <p className={`font-medium text-sm ${checked ? "line-through text-muted" : "text-foreground"}`}>
+            {meal.title}
+          </p>
+          <p className="text-xs text-muted mt-0.5 truncate">{meal.description}</p>
+          <p className="text-[10px] text-muted mt-0.5">
+            {meal.prepTime + meal.cookTime} min total
+          </p>
+        </div>
       </div>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onViewRecipe();
+        }}
+        disabled={generatingRecipe}
+        className="mt-2 w-full py-1.5 text-xs font-medium rounded-md border border-primary/30 text-primary hover:bg-primary/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
+      >
+        {generatingRecipe ? (
+          <>
+            <Spinner size="sm" />
+            Generating...
+          </>
+        ) : (
+          "🔍 View Full Recipe"
+        )}
+      </button>
     </div>
   );
 }
@@ -69,8 +92,8 @@ export default function WeeklyMenuChart({
   includeAppetizers,
   includeDesserts,
 }: WeeklyMenuChartProps) {
-  // Track checked state: key = "day-meal-course", e.g. "Monday-breakfast" or "Monday-lunch-appetizer"
   const [checked, setChecked] = useState<Set<string>>(new Set());
+  const [generatingKey, setGeneratingKey] = useState<string | null>(null);
 
   const toggle = (key: string) => {
     setChecked((prev) => {
@@ -81,8 +104,38 @@ export default function WeeklyMenuChart({
     });
   };
 
+  const handleViewRecipe = async (meal: MealItem, key: string) => {
+    setGeneratingKey(key);
+    try {
+      const res = await fetch("/api/recipes/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          recipeType: "main_course",
+          cookingMethod: "sauteing",
+          cuisine: "indian",
+          timeCategory: "30_60",
+          dietaryPreference: "none",
+          ingredients: [],
+          recipeName: meal.title,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        window.location.href = `/recipe/${data.id}`;
+      } else {
+        alert("Failed to generate recipe. Please try again.");
+      }
+    } catch {
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setGeneratingKey(null);
+    }
+  };
+
   const totalMeals = menu.reduce((count, day) => {
-    let c = 3; // breakfast + lunch main + dinner main
+    let c = 3;
     if (includeAppetizers) c += (day.lunch.appetizer ? 1 : 0) + (day.dinner.appetizer ? 1 : 0);
     if (includeDesserts) c += (day.lunch.dessert ? 1 : 0) + (day.dinner.dessert ? 1 : 0);
     return count + c;
@@ -96,12 +149,8 @@ export default function WeeklyMenuChart({
       {/* Progress bar */}
       <div className="rounded-xl bg-white border border-border p-4">
         <div className="flex items-center justify-between mb-2">
-          <p className="text-sm font-semibold text-foreground">
-            Weekly Progress
-          </p>
-          <p className="text-sm text-muted">
-            {checkedCount}/{totalMeals} meals checked
-          </p>
+          <p className="text-sm font-semibold text-foreground">Weekly Progress</p>
+          <p className="text-sm text-muted">{checkedCount}/{totalMeals} meals checked</p>
         </div>
         <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
           <div
@@ -126,9 +175,11 @@ export default function WeeklyMenuChart({
               <MealCard
                 meal={day.breakfast}
                 label="Main"
-                emoji="🌅"
+                emoji="\ud83c\udf05"
                 checked={checked.has(`${day.day}-breakfast`)}
                 onToggle={() => toggle(`${day.day}-breakfast`)}
+                onViewRecipe={() => handleViewRecipe(day.breakfast, `${day.day}-breakfast`)}
+                generatingRecipe={generatingKey === `${day.day}-breakfast`}
               />
             </div>
 
@@ -139,25 +190,31 @@ export default function WeeklyMenuChart({
                 <MealCard
                   meal={day.lunch.appetizer}
                   label="Appetizer"
-                  emoji="🥗"
+                  emoji="\ud83e\udd57"
                   checked={checked.has(`${day.day}-lunch-appetizer`)}
                   onToggle={() => toggle(`${day.day}-lunch-appetizer`)}
+                  onViewRecipe={() => handleViewRecipe(day.lunch.appetizer!, `${day.day}-lunch-appetizer`)}
+                  generatingRecipe={generatingKey === `${day.day}-lunch-appetizer`}
                 />
               )}
               <MealCard
                 meal={day.lunch.main}
                 label="Main"
-                emoji="🍛"
+                emoji="\ud83c\udf5b"
                 checked={checked.has(`${day.day}-lunch`)}
                 onToggle={() => toggle(`${day.day}-lunch`)}
+                onViewRecipe={() => handleViewRecipe(day.lunch.main, `${day.day}-lunch`)}
+                generatingRecipe={generatingKey === `${day.day}-lunch`}
               />
               {includeDesserts && day.lunch.dessert && (
                 <MealCard
                   meal={day.lunch.dessert}
                   label="Dessert"
-                  emoji="🍰"
+                  emoji="\ud83c\udf70"
                   checked={checked.has(`${day.day}-lunch-dessert`)}
                   onToggle={() => toggle(`${day.day}-lunch-dessert`)}
+                  onViewRecipe={() => handleViewRecipe(day.lunch.dessert!, `${day.day}-lunch-dessert`)}
+                  generatingRecipe={generatingKey === `${day.day}-lunch-dessert`}
                 />
               )}
             </div>
@@ -169,25 +226,31 @@ export default function WeeklyMenuChart({
                 <MealCard
                   meal={day.dinner.appetizer}
                   label="Appetizer"
-                  emoji="🥗"
+                  emoji="\ud83e\udd57"
                   checked={checked.has(`${day.day}-dinner-appetizer`)}
                   onToggle={() => toggle(`${day.day}-dinner-appetizer`)}
+                  onViewRecipe={() => handleViewRecipe(day.dinner.appetizer!, `${day.day}-dinner-appetizer`)}
+                  generatingRecipe={generatingKey === `${day.day}-dinner-appetizer`}
                 />
               )}
               <MealCard
                 meal={day.dinner.main}
                 label="Main"
-                emoji="🍽️"
+                emoji="\ud83c\udf7d\ufe0f"
                 checked={checked.has(`${day.day}-dinner`)}
                 onToggle={() => toggle(`${day.day}-dinner`)}
+                onViewRecipe={() => handleViewRecipe(day.dinner.main, `${day.day}-dinner`)}
+                generatingRecipe={generatingKey === `${day.day}-dinner`}
               />
               {includeDesserts && day.dinner.dessert && (
                 <MealCard
                   meal={day.dinner.dessert}
                   label="Dessert"
-                  emoji="🍰"
+                  emoji="\ud83c\udf70"
                   checked={checked.has(`${day.day}-dinner-dessert`)}
                   onToggle={() => toggle(`${day.day}-dinner-dessert`)}
+                  onViewRecipe={() => handleViewRecipe(day.dinner.dessert!, `${day.day}-dinner-dessert`)}
+                  generatingRecipe={generatingKey === `${day.day}-dinner-dessert`}
                 />
               )}
             </div>

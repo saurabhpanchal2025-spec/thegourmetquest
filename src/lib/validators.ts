@@ -9,6 +9,7 @@ export const generateRecipeSchema = z.object({
   nutritionalVariants: z.array(z.string()).default([]),
   ingredients: z.array(z.string()).default([]),
   excludeIngredients: z.array(z.string()).default([]),
+  recipeName: z.string().optional(),
 });
 
 export const recipeOutputSchema = z.object({

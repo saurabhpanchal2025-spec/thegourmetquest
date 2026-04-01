@@ -22,12 +22,17 @@ function getClient() {
 }
 
 function buildPrompt(input: GenerateRecipeInput): string {
-  const parts = [
-    `Generate a ${input.recipeType.replace("_", " ")} recipe`,
-    `using the ${input.cookingMethod.replace("_", " ")} cooking method`,
-    `in ${input.cuisine.replace("_", " ")} cuisine`,
-    `Time constraint: ${input.timeCategory.replace("_", "-").replace("under-", "under ")} minutes`,
-  ];
+  const parts: string[] = [];
+
+  if (input.recipeName) {
+    parts.push(`Generate a detailed recipe for "${input.recipeName}"`);
+    parts.push(`Cuisine style: ${input.cuisine.replace(/_/g, " ")}`);
+  } else {
+    parts.push(`Generate a ${input.recipeType.replace("_", " ")} recipe`);
+    parts.push(`using the ${input.cookingMethod.replace("_", " ")} cooking method`);
+    parts.push(`in ${input.cuisine.replace("_", " ")} cuisine`);
+  }
+  parts.push(`Time constraint: ${input.timeCategory.replace("_", "-").replace("under-", "under ")} minutes`);
 
   if (input.dietaryPreference && input.dietaryPreference !== "none") {
     const dietMap: Record<string, string> = {

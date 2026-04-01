@@ -51,4 +51,5 @@ export interface GenerateRecipeInput {
   nutritionalVariants?: string[];
   ingredients: string[];
   excludeIngredients?: string[];
+  recipeName?: string;
 }
