@@ -53,7 +53,7 @@ function MealCard({
               : "border-gray-300"
           }`}
         >
-          {checked ? "\u2713" : ""}
+          {checked ? "✓" : ""}
         </span>
         <div className="flex-1 min-w-0">
           <p className="text-xs text-muted">{emoji} {label}</p>
@@ -175,7 +175,7 @@ export default function WeeklyMenuChart({
               <MealCard
                 meal={day.breakfast}
                 label="Main"
-                emoji="\ud83c\udf05"
+                emoji="🌅"
                 checked={checked.has(`${day.day}-breakfast`)}
                 onToggle={() => toggle(`${day.day}-breakfast`)}
                 onViewRecipe={() => handleViewRecipe(day.breakfast, `${day.day}-breakfast`)}
@@ -190,7 +190,7 @@ export default function WeeklyMenuChart({
                 <MealCard
                   meal={day.lunch.appetizer}
                   label="Appetizer"
-                  emoji="\ud83e\udd57"
+                  emoji="🥗"
                   checked={checked.has(`${day.day}-lunch-appetizer`)}
                   onToggle={() => toggle(`${day.day}-lunch-appetizer`)}
                   onViewRecipe={() => handleViewRecipe(day.lunch.appetizer!, `${day.day}-lunch-appetizer`)}
@@ -200,7 +200,7 @@ export default function WeeklyMenuChart({
               <MealCard
                 meal={day.lunch.main}
                 label="Main"
-                emoji="\ud83c\udf5b"
+                emoji="🍛"
                 checked={checked.has(`${day.day}-lunch`)}
                 onToggle={() => toggle(`${day.day}-lunch`)}
                 onViewRecipe={() => handleViewRecipe(day.lunch.main, `${day.day}-lunch`)}
@@ -210,7 +210,7 @@ export default function WeeklyMenuChart({
                 <MealCard
                   meal={day.lunch.dessert}
                   label="Dessert"
-                  emoji="\ud83c\udf70"
+                  emoji="🍰"
                   checked={checked.has(`${day.day}-lunch-dessert`)}
                   onToggle={() => toggle(`${day.day}-lunch-dessert`)}
                   onViewRecipe={() => handleViewRecipe(day.lunch.dessert!, `${day.day}-lunch-dessert`)}
@@ -226,7 +226,7 @@ export default function WeeklyMenuChart({
                 <MealCard
                   meal={day.dinner.appetizer}
                   label="Appetizer"
-                  emoji="\ud83e\udd57"
+                  emoji="🥗"
                   checked={checked.has(`${day.day}-dinner-appetizer`)}
                   onToggle={() => toggle(`${day.day}-dinner-appetizer`)}
                   onViewRecipe={() => handleViewRecipe(day.dinner.appetizer!, `${day.day}-dinner-appetizer`)}
@@ -236,7 +236,7 @@ export default function WeeklyMenuChart({
               <MealCard
                 meal={day.dinner.main}
                 label="Main"
-                emoji="\ud83c\udf7d\ufe0f"
+                emoji="🍽️"
                 checked={checked.has(`${day.day}-dinner`)}
                 onToggle={() => toggle(`${day.day}-dinner`)}
                 onViewRecipe={() => handleViewRecipe(day.dinner.main, `${day.day}-dinner`)}
@@ -246,7 +246,7 @@ export default function WeeklyMenuChart({
                 <MealCard
                   meal={day.dinner.dessert}
                   label="Dessert"
-                  emoji="\ud83c\udf70"
+                  emoji="🍰"
                   checked={checked.has(`${day.day}-dinner-dessert`)}
                   onToggle={() => toggle(`${day.day}-dinner-dessert`)}
                   onViewRecipe={() => handleViewRecipe(day.dinner.dessert!, `${day.day}-dinner-dessert`)}
